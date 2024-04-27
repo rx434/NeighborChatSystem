@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<p>Hello {{ uname }}!</p>
+<h1>Cookies Information</h1>
+    {% if cookies %}
+        <ul>
+            {% for key, value in cookies.items %}
+                <li><strong>{{ key }}:</strong> {{ value }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No cookies found.</p>
+    {% endif %}
+
+<h1>Session Information</h1>
+<p>User ID: {{ uid }}</p>
+<form action="/logout/" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+</body>
+</html>
