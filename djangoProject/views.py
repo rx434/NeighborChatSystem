@@ -33,9 +33,9 @@ def register(request):
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM users WHERE username = %s", [username])
             user_row = cursor.fetchone()
-            if user_row is not None:
-                error_message = "This username already exists."
-                return render(request, 'register.html', {'error_message': error_message})
+        if user_row is not None:
+            error_message = "This username already exists."
+            return render(request, 'register.html', {'error_message': error_message})
 
         if password != password2:
             error_message = "The two passwords don't match"

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Address</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <style>
@@ -13,41 +13,11 @@
     </style>
 </head>
 <body>
-<h2>Register</h2>
-    <form action="/register/" method="post">
+<div>
+    <form action="/address/" method="POST">
         {% csrf_token %}
-        <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <div>
-            <label for="password">Retype Password:</label>
-            <input type="password" id="password2" name="password2" required>
-        </div>
-        <div>
-            <label>First Name:</label>
-            <input type="text" id="firstname" name="firstname" required>
-        </div>
-        <div>
-            <label>Last Name:</label>
-            <input type="text" id="lastname" name="lastname" required>
-        </div>
-        <div>
-            <label>Email:</label>
-            <input type="text" id="email" name="email" required>
-        </div>
-        <div>
-            <label>Address Latitude:</label>
-            <input type="text" id="latitude" name="latitude" required>
-        </div>
-        <div>
-            <label>Address Longitude:</label>
-            <input type="text" id="longitude" name="longitude" required>
-        </div>
+        <label>Latitude:</label><input type="text" id='latitude' name='latitude'><br>
+        <label>Longitude:</label><input type="text" id='longitude' name='longitude'><br>
         <div id="map"></div>
         <script>
         var map = L.map('map');
@@ -107,15 +77,11 @@
             map.setView([51.505, -0.09], 13);
         }
         </script>
-        {% if error_message %}
-        <div>{{ error_message }}</div>
-        {% endif %}
-        <div>
-            <input type="submit" value="Register">
-        </div>
+        <button type="submit">Change</button>
     </form>
-    <form action="/login/" method="get">
-        <button type="submit">Back to login</button>
+    <form action="/profile/{{ uid }}" method="GET">
+        <button type="submit">Back</button>
     </form>
+</div>
 </body>
 </html>

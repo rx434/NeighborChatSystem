@@ -2,20 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Home</title>
 </head>
 <body>
-<p>Hello {{ uname }}!</p>
-<h1>Cookies Information</h1>
-    {% if cookies %}
-        <ul>
-            {% for key, value in cookies.items %}
-                <li><strong>{{ key }}:</strong> {{ value }}</li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>No cookies found.</p>
-    {% endif %}
+<h1>Hello {{ uname }}!</h1>
+{% if block and neighbor %}
+    <h2>You are currently in the block <a href="/block/{{ blockid }}/">{{ block }}</a> and in the neighborhood <a href="/neighbor/{{ nid }}/">{{ neighbor }}</a>.</h2>
+{% else %}
+    <h2>You are currently not a member of any block. Please apply for one block!</h2>
+{%  endif %}
+<p1><a href="/profile/{{ uid }}/">Profile</a></p1>
 
 <h1>Session Information</h1>
 <p>User ID: {{ uid }}</p>
