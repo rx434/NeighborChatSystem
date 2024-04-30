@@ -36,7 +36,7 @@ def home(request):
     else:
         blockid, block, nid, neighbor = row
 
-    return render(request, 'home.html', {'uid': uid, 'uname': uname, 'bid': blockid, 'nid': nid,
+    return render(request, 'home.html', {'uid': uid, 'uname': uname, 'blockid': blockid, 'nid': nid,
                                          'block': block, 'neighbor': neighbor, 'photo': photo})
 
 
@@ -46,14 +46,30 @@ def profile(request, uid):
     error_message = request.session.get('error_message', None)
     if request.method == 'GET':
         with connection.cursor() as cursor:
-            cursor.execute("SELECT username, first_name, last_name, email, address_latitude, address_longitude, profile_text, photo FROM users WHERE userid = %s", [uid])
+            cursor.execute("""
+            SELECT blockid, username, first_name, last_name, email, address_latitude, address_longitude, profile_text, photo, membership_date
+            FROM users 
+            WHERE userid = %s
+            """, [uid])
             user_row = cursor.fetchone()
+            blockid, username, first_name, last_name, email, latitude, longitude, introduction, photo, membership_date = user_row
 
-        username, first_name, last_name, email, latitude, longitude, introduction, photo = user_row
-        return render(request, 'profile.html', {'uid': uid, 'session_uid': session_uid,
+            if blockid is not None:
+                cursor.execute("""
+                SELECT name
+                FROM block
+                WHERE blockid = %s
+                """, [blockid])
+                block = cursor.fetchone()[0]
+            else:
+                block = None
+
+        return render(request, 'profile.html', {'blockid': blockid, 'block': block, 'uid': uid,
+                                                'session_uid': session_uid,
                                                 'uname': username, 'first_name': first_name, 'last_name': last_name,
                                                 'email': email, 'latitude': latitude, 'longitude': longitude,
                                                 'introduction': introduction, 'photo': photo,
+                                                'membership_date': membership_date,
                                                 'error_message': error_message})
     elif request.method == 'POST':
         photo = request.FILES.get('photo')
@@ -67,6 +83,10 @@ def profile(request, uid):
             extension = os.path.splitext(photo.name)[1]
             filename = f"{uid}{extension}"
             photo_path = os.path.join(settings.MEDIA_ROOT, filename)
+
+            if os.path.exists(photo_path):
+                os.remove(photo_path)
+
             with open(photo_path, 'wb+') as destination:
                 for chunk in photo.chunks():
                     destination.write(chunk)

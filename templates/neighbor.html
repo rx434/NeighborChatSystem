@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Neighbor</title>
+</head>
+<body>
+<div>
+    <h1>Neighborhood Name: {{ nname }}</h1>
+    <p>Description: {{ description }}</p>
+    <h2>Blocks in this Neighborhood:</h2>
+    {% if members %}
+        <ul>
+            {% for blockid, block in members %}
+            <li>
+                <a href="/block/{{ blockid }}/">{{ block }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No members found in this block.</p>
+    {% endif %}
+    <form action="/" method="get">
+        <button type="submit">Back to home</button>
+    </form>
+</div>
+</body>
+</html>

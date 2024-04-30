@@ -5,6 +5,28 @@
     <title>Block</title>
 </head>
 <body>
-
+<div>
+    <h1>Block Name: {{ bname }}</h1>
+    <h2>This Block is in the Neighborhood <a href="/neighbor/{{ nid }}/">{{ neighbor }}</a>.</h2>
+    <p>Latitude: {{ latitude }}</p>
+    <p>Longitude: {{ longitude }}</p>
+    <p>Radius (miles): {{ radius }}</p>
+    <h2>Members in this Block:</h2>
+    {% if members %}
+        <ul>
+            {% for photo, uid, username in members %}
+            <li>
+                <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                <a href="/profile/{{ uid }}/">{{ username }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No members found in this block.</p>
+    {% endif %}
+    <form action="/" method="get">
+        <button type="submit">Back to home</button>
+    </form>
+</div>
 </body>
 </html>

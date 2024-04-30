@@ -14,6 +14,11 @@
     <p>Email: {{ email }}</p>
     <p>Address Latitude: {{ latitude }}</p>
     <p>Address Longitude: {{ longitude }}</p>
+    {% if blockid %}
+        <p>Block: <a href="/block/{{ blockid }}/">{{ block }}</a> starting from {{ membership_date }}</p>
+    {% else %}
+        <p>This user has no block yet. </p>
+    {% endif %}
     <p>Introduce yourself: {{ introduction }}</p>
     {% if uid == session_uid %}
         <button onclick="editProfile()">Edit</button>
@@ -50,9 +55,9 @@
     }
 
     function viewProfile() {
+        document.getElementById('editprofile').submit();
         document.getElementById('ViewProfile').style.display = 'block';
         document.getElementById('EditProfile').style.display = 'none';
-        document.getElementById('editprofile').submit();
     }
 </script>
 </body>
