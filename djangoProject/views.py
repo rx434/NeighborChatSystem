@@ -44,9 +44,9 @@ def register(request):
         else:
             query = """
             INSERT INTO users (blockid, username, password, first_name, last_name, email, address_latitude, address_longitude, profile_text, photo) 
-            VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, NULL, NULL)
+            VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, NULL, %s)
             """
-            params = (username, hash_password(password), firstname, lastname, email, latitude, longitude)
+            params = (username, hash_password(password), firstname, lastname, email, latitude, longitude, "default.png")
             with connection.cursor() as cursor:
                 cursor.execute(query, params)
             return redirect('login')

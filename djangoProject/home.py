@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from .decorators import login_required
 from django.db import connection
+from django.conf import settings
+import os
+from django.core.files.storage import FileSystemStorage
 
 
 @login_required
@@ -8,9 +11,18 @@ def home(request):
     uid = request.session.get('uid', 'Not set')
     uname = request.session.get('uname', 'Not set')
     request.session['error_message'] = None
+
     with connection.cursor() as cursor:
         cursor.execute("""
-        SELECT block.blockid, block.name, neighborhood.nid, neighborhood.name 
+        SELECT photo
+        FROM users
+        WHERE userid = %s
+        """, [uid])
+        photo = cursor.fetchone()[0]
+
+    with connection.cursor() as cursor:
+        cursor.execute("""
+        SELECT block.blockid, block.name, neighborhood.nid, neighborhood.name
         FROM users, block, neighborhood
         WHERE users.blockid = block.blockid and block.nid = neighborhood.nid and userid = %s
         """, [uid])
@@ -25,7 +37,8 @@ def home(request):
         blockid, block, nid, neighbor = row
 
     return render(request, 'home.html', {'uid': uid, 'uname': uname, 'bid': blockid, 'nid': nid,
-                                         'block': block, 'neighbor': neighbor})
+                                         'block': block, 'neighbor': neighbor, 'photo': photo})
+
 
 @login_required
 def profile(request, uid):
@@ -43,27 +56,37 @@ def profile(request, uid):
                                                 'introduction': introduction, 'photo': photo,
                                                 'error_message': error_message})
     elif request.method == 'POST':
-        photo = request.POST.get('photo')
+        photo = request.FILES.get('photo')
         username = request.POST.get('uname')
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
         introduction = request.POST.get('introduction')
 
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM users WHERE username = %s", [username])
-            user_row = cursor.fetchall()
-        if len(user_row) >= 2:
-            error_message = "This username already exists."
-            request.session['error_message'] = error_message
-            return redirect('profile', uid=uid)
+        if photo:
+            extension = os.path.splitext(photo.name)[1]
+            filename = f"{uid}{extension}"
+            photo_path = os.path.join(settings.MEDIA_ROOT, filename)
+            with open(photo_path, 'wb+') as destination:
+                for chunk in photo.chunks():
+                    destination.write(chunk)
+
+            relative_photo_path = filename
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                SELECT photo
+                FROM users
+                WHERE userid = %s
+                """, [uid])
+                relative_photo_path = cursor.fetchone()[0]
 
         try:
             with connection.cursor() as cursor:
                 cursor.execute("""
                     UPDATE users SET username=%s, photo=%s, first_name=%s, last_name=%s, email=%s, profile_text=%s
                     WHERE userid=%s
-                    """, [username, photo, first_name, last_name, email, introduction, uid])
+                    """, [username, relative_photo_path, first_name, last_name, email, introduction, uid])
         except:
             error_message = "This username already exists."
             request.session['error_message'] = error_message

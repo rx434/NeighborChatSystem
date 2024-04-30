@@ -6,6 +6,7 @@
 </head>
 <body>
 <h1>Hello {{ uname }}!</h1>
+<img src="/media/{{ photo }}" style="width: 100px; height: 100px; object-fit: cover;">
 {% if block and neighbor %}
     <h2>You are currently in the block <a href="/block/{{ blockid }}/">{{ block }}</a> and in the neighborhood <a href="/neighbor/{{ nid }}/">{{ neighbor }}</a>.</h2>
 {% else %}

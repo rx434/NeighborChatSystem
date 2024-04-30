@@ -18,6 +18,9 @@ from django.contrib import admin
 from django.urls import path
 from .views import user_login, register, logout
 from .home import home, profile, address
+from .block import block, neighbor
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', home, name='home'),
@@ -26,5 +29,10 @@ urlpatterns = [
     path('logout/', logout, name='logout'),
     path('profile/<int:uid>/', profile, name='profile'),
     path('address/', address, name='address'),
+    path('block/<int:bid>/', block, name='block'),
+    path('neighbor/<int:nid>/', neighbor, name='neighbor')
     # Include other paths as necessary
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

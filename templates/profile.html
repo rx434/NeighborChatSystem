@@ -7,7 +7,8 @@
 <body>
 <div id="ViewProfile" style="display: block;">
     <h1>Username: {{ uname }}</h1>
-    <p>Photo: {{ photo }}</p>
+    <img src="/media/{{ photo }}" alt="User Photo" style="width: 100px; height: 100px; object-fit: cover;">
+{#    <p>Photo: {{ photo }}</p>#}
     <p>First Name: {{ first_name }}</p>
     <p>Last Name: {{ last_name }}</p>
     <p>Email: {{ email }}</p>
@@ -28,13 +29,14 @@
 {% endif %}
 </div>
 <div id="EditProfile" style="display: none;">
-    <form id="editprofile" action="/profile/{{ uid }}/" method="POST">
+    <form id="editprofile" action="/profile/{{ uid }}/" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <label>Username:</label><input type="text" name='uname' value="{{ uname }}"><br>
         <label>First Name:</label><input type="text" name='first_name' value="{{ first_name }}"><br>
         <label>Last Name:</label><input type="text" name='last_name' value="{{ last_name }}"><br>
         <label>Email:</label><input type="email" name='email' value="{{ email }}"><br>
         <label>Introduce Yourself:</label><textarea name="introduction">{{ introduction }}</textarea><br>
+        <label>Upload Photo:</label><input type="file" name="photo"><br>
         <button onclick="viewProfile()">Save</button>
     </form>
     <form action="/profile/{{ uid }}/" method="get">
@@ -48,9 +50,9 @@
     }
 
     function viewProfile() {
-        document.getElementById('editprofile').submit();
         document.getElementById('ViewProfile').style.display = 'block';
         document.getElementById('EditProfile').style.display = 'none';
+        document.getElementById('editprofile').submit();
     }
 </script>
 </body>
