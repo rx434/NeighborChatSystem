@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from .views import user_login, register, logout
-from .home import home, profile, address
+from .home import home, profile, address, serve_media
 from .block import block, neighbor
 from django.conf import settings
 from django.conf.urls.static import static
@@ -30,7 +30,8 @@ urlpatterns = [
     path('profile/<int:uid>/', profile, name='profile'),
     path('address/', address, name='address'),
     path('block/<int:bid>/', block, name='block'),
-    path('neighbor/<int:nid>/', neighbor, name='neighbor')
+    path('neighbor/<int:nid>/', neighbor, name='neighbor'),
+    path('media/<path:path>', serve_media, name='serve_media'),
     # Include other paths as necessary
 ]
 
