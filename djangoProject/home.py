@@ -4,7 +4,6 @@ from .decorators import login_required
 from django.db import connection
 from django.conf import settings
 import os
-from django.core.files.storage import FileSystemStorage
 
 
 @login_required

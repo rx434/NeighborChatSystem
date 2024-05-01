@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Apply</title>
+</head>
+<body>
+{% if blockid %}
+    <div>
+        <h1>You are now in the block <a href="/block/{{ blockid }}/">{{ blockname }}</a></h1>
+        <form action="/leave/" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="bid" value={{ blockid }}>
+            <button type="submit">Leave</button>
+        </form>
+        <h1>Application for this block: </h1>
+        {% if apply_users %}
+            <ul>
+                {% for aid, uid, count, username, photo in apply_users %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ uid }}/">{{ username }}</a>
+                    <p>Approval Count: {{ count }}</p>
+                    <form action="/approve/" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="aid" value={{ aid }}>
+                        <button type="submit">Approve</button>
+                    </form>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>There are no applications for this block now. </p>
+        {% endif %}
+    </div>
+{% else %}
+    <div>
+        <h1>You are not a membership of any block currently. </h1>
+        <h1>Application in progress:</h1>
+        {% if aid %}
+            <p><a href="/block/{{ apply_blockid }}/">{{ apply_blockname }}</a>  Approval Counts: {{ count }}    Apply at: {{ t }}</p>
+            <form action="/cancel/" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="aid" value="{{ aid }}">
+                <button type="submit">Cancel</button>
+            </form>
+        {% else %}
+            <p>You have no application now. </p>
+        {% endif %}
+        {% if recommend_blocks %}
+            <h1>According to your address, we recommend you to apply for the following blocks:</h1>
+            <ul>
+                {% for rec_bid, rec_name in recommend_blocks %}
+                <li>
+                    <a href="/block/{{ rec_bid }}/">{{ rec_name }}</a>
+                    {% if aid is None %}
+                        <form action="/apply/" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="bid" value={{ rec_bid }}>
+                            <button type="submit">Apply</button>
+                        </form>
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>Sorry. According to your address, we cannot find any blocks that fit for you. </h1>
+        {% endif %}
+        <h1>All blocks:</h1>
+        <ul>
+            {% for a_bid, a_name in all_blocks %}
+                <li>
+                    <a href="/block/{{ a_bid }}/">{{ a_name }}</a>
+                    {% if aid is None %}
+                        <form action="/apply/" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="bid" value={{ a_bid }}>
+                            <button type="submit">Apply</button>
+                        </form>
+                    {% endif %}
+                </li>
+                {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+<form action="/" method="get">
+    <button type="submit">Back to home</button>
+</form>
+</body>
+</html>

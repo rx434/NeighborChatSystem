@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .decorators import login_required
 from django.db import connection
 from .settings import MEDIA_ROOT
+from .query import find_block_by_id
 
 
 @login_required
@@ -22,7 +23,19 @@ def block(request, bid):
             """, [bid])
             members = cursor.fetchall()
 
+        uid = request.session.get('uid', None)
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT *
+            FROM follow
+            WHERE userid = %s and blockid = %s
+            """, [uid, bid])
+            follow = cursor.fetchone()
+
+
         context = {
+            'bid': bid,
             'bname': bname,
             'neighbor': neighbor,
             'nid': nid,
@@ -30,6 +43,7 @@ def block(request, bid):
             'longitude': longitude,
             'radius': radius,
             'members': members,
+            'follow': follow,
             'MEDIA_ROOT': MEDIA_ROOT
         }
 
@@ -62,4 +76,44 @@ def neighbor(request, nid):
         }
 
         return render(request, 'neighbor.html', context)
+
+
+@login_required
+def follow(request):
+    uid = request.session.get('uid', None)
+    if request.method == 'GET':
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT block.blockid, block.name
+            FROM follow, block
+            WHERE follow.blockid = block.blockid and userid = %s
+            """, [uid])
+            followed_blocks = cursor.fetchall()
+
+        content = {
+            'followed_blocks': followed_blocks
+        }
+        return render(request, 'follow.html', content)
+
+    else:
+        follow = request.POST.get('follow')
+        print(follow)
+        bid = request.POST.get('bid')
+        if follow == 'follow':
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                INSERT INTO follow (userid, blockid)
+                VALUES (%s, %s)
+                """, [uid, bid])
+            return redirect('block', bid=bid)
+
+        elif follow == 'unfollow':
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                DELETE FROM follow
+                WHERE userid = %s and blockid = %s
+                """, [uid, bid])
+            return redirect('block', bid=bid)
+
+
 

@@ -18,7 +18,8 @@ from django.contrib import admin
 from django.urls import path
 from .views import user_login, register, logout
 from .home import home, profile, address, serve_media
-from .block import block, neighbor
+from .block import block, neighbor, follow
+from .apply import apply, approve, cancel, leave
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -32,6 +33,11 @@ urlpatterns = [
     path('block/<int:bid>/', block, name='block'),
     path('neighbor/<int:nid>/', neighbor, name='neighbor'),
     path('media/<path:path>', serve_media, name='serve_media'),
+    path('apply/', apply, name='apply'),
+    path('follow/', follow, name='follow'),
+    path('approve/', approve, name='approve'),
+    path('cancel/', cancel, name='cancel'),
+    path('leave/', leave, name='leave'),
     # Include other paths as necessary
 ]
 
