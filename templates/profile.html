@@ -26,9 +26,36 @@
             <button type="submit">Change Address</button>
     </form>
     {% endif %}
-    <form action="/" method="get">
-        <button type="submit">Back to home</button>
-    </form>
+    {% if uid != session_uid %}
+        {% if neighbor_relation is None %}
+            <form action="/neighbor_relation/" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="neighbor_relation" value='neighbor'>
+                <input type="hidden" name="touid" value={{ uid }}>
+                <button type="submit">Neighbor</button>
+            </form>
+        {% else %}
+            <h3>This person is your neighbor!</h3>
+        {% endif %}
+
+        {% if you_are_waiting_to_this_user %}
+            <h3>This user is processing your friend application.</h3>
+        {% elif this_user_is_waiting_to_you %}
+            <h3>This user is waiting for you to approve friend application.</h3>
+        {% elif you_and_this_user_are_friends %}
+            <h3>This person is your friend!</h3>
+        {% else %}
+            <form action="/friend_relation/" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="friend_relation" value='friend'>
+                <input type="hidden" name="touid" value={{ uid }}>
+                <button type="submit">Friend</button>
+            </form>
+        {% endif %}
+    {% endif %}
+        <form action="/" method="get">
+            <button type="submit">Back to home</button>
+        </form>
 {% if error_message %}
 <div>{{ error_message }}</div>
 {% endif %}

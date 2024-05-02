@@ -64,12 +64,50 @@ def profile(request, uid):
             else:
                 block = None
 
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT *
+            FROM relationship
+            WHERE fromuserid = %s and touserid = %s and status = %s and relation_type = %s
+            """, [session_uid, uid, 'Approved', 'Neighbor'])
+            neighbor_relation = cursor.fetchone()
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT *
+            FROM relationship
+            WHERE fromuserid = %s and touserid = %s and relation_type = %s and status = %s
+            """, [session_uid, uid, 'Friend', 'Pending'])
+            you_are_waiting_to_this_user = cursor.fetchone()
+
+            cursor.execute("""
+            SELECT *
+            FROM relationship
+            WHERE touserid = %s and fromuserid = %s and relation_type = %s and status = %s
+            """, [session_uid, uid, 'Friend', 'Pending'])
+            this_user_is_waiting_to_you = cursor.fetchone()
+
+            cursor.execute("""
+            (SELECT *
+            FROM relationship
+            WHERE fromuserid = %s and touserid = %s and relation_type = %s and status = %s)
+            UNION
+            (SELECT *
+            FROM relationship
+            WHERE touserid = %s and fromuserid = %s and relation_type = %s and status = %s)
+            """, [session_uid, uid, 'Friend', 'Approved', session_uid, uid, 'Friend', 'Approved'])
+            you_and_this_user_are_friends = cursor.fetchall()
+
         return render(request, 'profile.html', {'blockid': blockid, 'block': block, 'uid': uid,
                                                 'session_uid': session_uid,
                                                 'uname': username, 'first_name': first_name, 'last_name': last_name,
                                                 'email': email, 'latitude': latitude, 'longitude': longitude,
                                                 'introduction': introduction, 'photo': photo,
                                                 'membership_date': membership_date,
+                                                'neighbor_relation': neighbor_relation,
+                                                'you_are_waiting_to_this_user': you_are_waiting_to_this_user,
+                                                'this_user_is_waiting_to_you': this_user_is_waiting_to_you,
+                                                'you_and_this_user_are_friends': you_and_this_user_are_friends,
                                                 'error_message': error_message})
     elif request.method == 'POST':
         photo = request.FILES.get('photo')

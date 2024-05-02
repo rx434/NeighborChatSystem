@@ -20,6 +20,7 @@ from .views import user_login, register, logout
 from .home import home, profile, address, serve_media
 from .block import block, neighbor, follow
 from .apply import apply, approve, cancel, leave
+from .relation import relation, neighbor_relation, friend_relation, cancel_application, approve_friend
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -38,6 +39,11 @@ urlpatterns = [
     path('approve/', approve, name='approve'),
     path('cancel/', cancel, name='cancel'),
     path('leave/', leave, name='leave'),
+    path('relation/', relation, name='relation'),
+    path('neighbor_relation/', neighbor_relation, name='neighbor_relation'),
+    path('friend_relation/', friend_relation, name='friend_relation'),
+    path('cancel_application/', cancel_application, name='cancel_application'),
+    path('approve_friend/', approve_friend, name='approve_friend'),
     # Include other paths as necessary
 ]
 

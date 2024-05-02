@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Relation</title>
+</head>
+<body>
+<div class="relationship_block">
+    {% if neighbors %}
+        <h4>Your Neighbors:</h4>
+        <ul>
+            {% for rid, fromuid, fromusername, fromphoto in neighbors %}
+                <li>
+                    <img src="/media/{{ fromphoto }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ fromuid }}/">{{ fromusername }}</a>
+                    <form action="/neighbor_relation/" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="rid" value={{ rid }}>
+                        <input type="hidden" name="neighbor_relation" value='unneighbor'>
+                        <button type="submit">Un-neighbor</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h4>You don't have any neighbors now. </h4>
+    {% endif %}
+</div>
+<div class="relationship_block">
+    {% if friends %}
+        <h4>Your Friends:</h4>
+        <ul>
+            {% for rid, uid, username, photo in friends %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ uid }}/">{{ username }}</a>
+                    <form action="/friend_relation/" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="friend_relation" value="unfirend">
+                        <input type="hidden" name="rid" value={{ rid }}>
+                        <button type="submit">Un-friend</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h4>You don't have any friends now. </h4>
+    {% endif %}
+</div>
+<div class="relationship_block">
+    {% if applications %}
+        <h4>These people want to become your friends:</h4>
+        <ul>
+            {% for rid, uid, username, photo in applications %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ uid }}/">{{ username }}</a>
+                    <form action="/approve_friend/" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="rid" value={{ rid }}>
+                        <button type="submit">Approve</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h4>You don't have any friends application from others now. </h4>
+    {% endif %}
+</div>
+<div class="relationship_block">
+    {% if to_applications %}
+        <h4>These people are processing your friend application:</h4>
+        <ul>
+            {% for rid, uid, username, photo in to_applications %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ uid }}/">{{ username }}</a>
+                    <form action="/cancel_application/" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="rid" value={{ rid }}>
+                        <button type="submit">Cancel</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h4>You don't have any friends application to others now. </h4>
+    {% endif %}
+</div>
+<form action="/" method="get">
+    <button type="submit">Back to home</button>
+</form>
+</body>
+</html>
