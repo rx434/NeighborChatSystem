@@ -21,6 +21,7 @@ from .home import home, profile, address, serve_media
 from .block import block, neighbor, follow
 from .apply import apply, approve, cancel, leave
 from .relation import relation, neighbor_relation, friend_relation, cancel_application, approve_friend
+from .message import message
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -33,7 +34,7 @@ urlpatterns = [
     path('address/', address, name='address'),
     path('block/<int:bid>/', block, name='block'),
     path('neighbor/<int:nid>/', neighbor, name='neighbor'),
-    path('media/<path:path>', serve_media, name='serve_media'),
+    path('media/<path:path>/', serve_media, name='serve_media'),
     path('apply/', apply, name='apply'),
     path('follow/', follow, name='follow'),
     path('approve/', approve, name='approve'),
@@ -44,6 +45,7 @@ urlpatterns = [
     path('friend_relation/', friend_relation, name='friend_relation'),
     path('cancel_application/', cancel_application, name='cancel_application'),
     path('approve_friend/', approve_friend, name='approve_friend'),
+    path('message/<int:mid>/', message, name='message')
     # Include other paths as necessary
 ]
 

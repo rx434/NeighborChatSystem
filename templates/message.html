@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Message</title>
+</head>
+<body>
+<div>
+    <img src="/media/{{ photo }}" style="width: 100px; height: 100px; object-fit: cover;">
+    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+    <h1>{{ subject }}</h1>
+    <h4>{{ body }}</h4>
+    <p>Posted on: {{ timestamp }}</p>
+    <p>Latitude: {{ latitude }}</p>
+    <p>Longitude: {{ longitude }}</p>
+</div>
+<h1>*******************************************</h1>
+<h2>Replies</h2>
+<div>
+    <ul>
+        {% for replyid, uid, mid, body, timestamp, username, photo in replies %}
+            <img src="/media/{{ photo }}/" style="width: 100px; height: 100px; object-fit: cover;">
+            <a href="/profile/{{ uid }}/">{{ username }}</a>
+            <h4>{{ body }}</h4>
+            <p>Posted on: {{ timestamp }}</p>
+        {% endfor %}
+    </ul>
+</div>
+<h1>*******************************************</h1>
+<form action="/message/{{ mid }}/" method="post">
+    {% csrf_token %}
+    <textarea name="reply_body" style="resize: none; width: 500px; height: 100px;"></textarea>
+    <button type="submit">Reply</button>
+</form>
+<form action="/view_message/" method="get">
+    <button type="submit">Back to Messages</button>
+</form>
+</body>
+</html>
