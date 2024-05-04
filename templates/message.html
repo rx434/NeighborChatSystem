@@ -27,11 +27,13 @@
     </ul>
 </div>
 <h1>*******************************************</h1>
+{% if reply_button == 'show' %}
 <form action="/message/{{ mid }}/" method="post">
     {% csrf_token %}
     <textarea name="reply_body" style="resize: none; width: 500px; height: 100px;"></textarea>
     <button type="submit">Reply</button>
 </form>
+{% endif %}
 <form action="/view_message/" method="get">
     <button type="submit">Back to Messages</button>
 </form>

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View_Message</title>
+</head>
+<script>
+        function AllMessagesFromNeighborsAll() {
+            document.getElementById('AllMessagesFromNeighborsAll').style.display = 'block';
+            document.getElementById('AllMessagesFromNeighborsNew').style.display = 'none';
+        }
+        function AllMessagesFromNeighborsNew() {
+            document.getElementById('AllMessagesFromNeighborsAll').style.display = 'none';
+            document.getElementById('AllMessagesFromNeighborsNew').style.display = 'block';
+        }
+        function AllMessagesFromFriendsAll() {
+            document.getElementById('AllMessagesFromFriendsAll').style.display = 'block';
+            document.getElementById('AllMessagesFromFriendsNew').style.display = 'none';
+        }
+        function AllMessagesFromFriendsNew() {
+            document.getElementById('AllMessagesFromFriendsAll').style.display = 'none';
+            document.getElementById('AllMessagesFromFriendsNew').style.display = 'block';
+        }
+        function AllMessagesFromBlockAll() {
+            document.getElementById('AllMessagesFromBlockAll').style.display = 'block';
+            document.getElementById('AllMessagesFromBlockNew').style.display = 'none';
+        }
+        function AllMessagesFromNeighborhoodsAll() {
+            document.getElementById('AllMessagesFromNeighborhoodsAll').style.display = 'block';
+            document.getElementById('AllMessagesFromNeighborhoodsNew').style.display = 'none';
+        }
+        function AllMessagesFromNeighborhoodsNew() {
+            document.getElementById('AllMessagesFromNeighborhoodsAll').style.display = 'none';
+            document.getElementById('AllMessagesFromNeighborhoodsNew').style.display = 'block';
+        }
+        function AllMessagesFromBlockNew() {
+            document.getElementById('AllMessagesFromBlockAll').style.display = 'none';
+            document.getElementById('AllMessagesFromBlockNew').style.display = 'block';
+        }
+        function AllMessagesFromNeighbors() {
+            document.getElementById('AllMessagesFromNeighbors').style.display = 'block';
+            document.getElementById('AllMessagesFromFriends').style.display = 'none';
+            document.getElementById('AllMessagesFromBlock').style.display = 'none';
+            document.getElementById('AllMessagesFromNeighborhood').style.display = 'none';
+        }
+        function AllMessagesFromFriends() {
+            document.getElementById('AllMessagesFromNeighbors').style.display = 'none';
+            document.getElementById('AllMessagesFromFriends').style.display = 'block';
+            document.getElementById('AllMessagesFromBlock').style.display = 'none';
+            document.getElementById('AllMessagesFromNeighborhood').style.display = 'none';
+        }
+        function AllMessagesFromBlock() {
+            document.getElementById('AllMessagesFromNeighbors').style.display = 'none';
+            document.getElementById('AllMessagesFromFriends').style.display = 'none';
+            document.getElementById('AllMessagesFromBlock').style.display = 'block';
+            document.getElementById('AllMessagesFromNeighborhood').style.display = 'none';
+        }
+        function AllMessagesFromNeighborhood() {
+            document.getElementById('AllMessagesFromNeighbors').style.display = 'none';
+            document.getElementById('AllMessagesFromFriends').style.display = 'none';
+            document.getElementById('AllMessagesFromBlock').style.display = 'none';
+            document.getElementById('AllMessagesFromNeighborhood').style.display = 'block';
+        }
+</script>
+<body>
+<button onclick="AllMessagesFromNeighbors()">All Messages From Neighbors</button>
+<button onclick="AllMessagesFromFriends()">All Messages From Friends</button>
+<button onclick="AllMessagesFromBlock()">All Messages From Block</button>
+<button onclick="AllMessagesFromNeighborhood()">All Messages From Neighborhood</button>
+<div id="AllMessagesFromNeighbors" style="display: block;">
+    <div id="AllMessagesFromNeighborsAll" style="display: block;">
+    <h1>All Messages From Neighbors</h1>
+        {% if all_messages_from_neighbors %}
+            <ul>
+                {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in all_messages_from_neighbors %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>You don't have any messages in this thread.</h1>
+        {% endif %}
+    </div>
+    <div id="AllMessagesFromNeighborsNew" style="display: none;">
+        <h1>New Messages From Neighbors</h1>
+        {% if all_messages_new_from_neighbors %}
+            <ul>
+                {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in all_messages_new_from_neighbors %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>You don't have any messages in this thread.</h1>
+        {% endif %}
+    </div>
+    <button onclick="AllMessagesFromNeighborsAll()">All Messages</button>
+    <button onclick="AllMessagesFromNeighborsNew()">New Messages</button>
+</div>
+<div id="AllMessagesFromFriends" style="display: none;">
+    <div id="AllMessagesFromFriendsAll" style="display: block;">
+    <h1>All Messages From Friends</h1>
+        {% if all_messages_from_friends %}
+            <ul>
+                {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in all_messages_from_friends %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>You don't have any messages in this thread.</h1>
+        {% endif %}
+    </div>
+    <div id="AllMessagesFromFriendsNew" style="display: none;">
+        <h1>New Messages From Friends</h1>
+        {% if all_messages_new_from_friends %}
+            <ul>
+                {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in all_messages_new_from_friends %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>You don't have any messages in this thread.</h1>
+        {% endif %}
+    </div>
+    <button onclick="AllMessagesFromFriendsAll()">All Messages</button>
+    <button onclick="AllMessagesFromFriendsNew()">New Messages</button>
+</div>
+<div id="AllMessagesFromBlock" style="display: none;">
+    <div id="AllMessagesFromBlockAll" style="display: block;">
+    <h1>All Messages From Block</h1>
+        {% if all_messages_from_block %}
+            <ul>
+                {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in all_messages_from_block %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>You don't have any messages in this thread.</h1>
+        {% endif %}
+    </div>
+    <div id="AllMessagesFromBlockNew" style="display: none;">
+        <h1>New Messages From Block</h1>
+        {% if new_messages_from_block %}
+            <ul>
+                {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in new_messages_from_block %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>You don't have any messages in this thread.</h1>
+        {% endif %}
+    </div>
+    <button onclick="AllMessagesFromBlockAll()">All Messages</button>
+    <button onclick="AllMessagesFromBlockNew()">New Messages</button>
+</div>
+<div id="AllMessagesFromNeighborhood" style="display: none;">
+    <div id="AllMessagesFromNeighborhoodsAll" style="display: block;">
+    <h1>All Messages From Neighborhood</h1>
+        {% if all_messages_from_neighborhood %}
+            <ul>
+                {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in all_messages_from_neighborhood %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>You don't have any messages in this thread.</h1>
+        {% endif %}
+    </div>
+    <div id="AllMessagesFromNeighborhoodsNew" style="display: none;">
+        <h1>New Messages From Neighborhood</h1>
+        {% if new_messages_from_neighborhood %}
+            <ul>
+                {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in new_messages_from_neighborhood %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <h1>You don't have any messages in this thread.</h1>
+        {% endif %}
+    </div>
+    <button onclick="AllMessagesFromNeighborhoodsAll()">All Messages</button>
+    <button onclick="AllMessagesFromNeighborhoodsNew()">New Messages</button>
+</div>
+<form action="/" method="get">
+    <button type="submit">Back to home</button>
+</form>
+</body>
+</html>
