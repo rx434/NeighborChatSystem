@@ -21,7 +21,7 @@ from .home import home, profile, address, serve_media
 from .block import block, neighbor, follow
 from .apply import apply, approve, cancel, leave
 from .relation import relation, neighbor_relation, friend_relation, cancel_application, approve_friend
-from .message import message, view_message
+from .message import message, view_message, send_message
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -46,7 +46,8 @@ urlpatterns = [
     path('cancel_application/', cancel_application, name='cancel_application'),
     path('approve_friend/', approve_friend, name='approve_friend'),
     path('message/<int:mid>/', message, name='message'),
-    path('view_message/', view_message, name='view_message')
+    path('view_message/', view_message, name='view_message'),
+    path('send_message/', send_message, name='send_message'),
     # Include other paths as necessary
 ]
 

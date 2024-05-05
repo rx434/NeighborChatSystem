@@ -246,3 +246,134 @@ def view_message(request):
         return render(request, 'view_message.html', content)
 
 
+@login_required
+def send_message(request):
+    uid = request.session.get('uid')
+    with connection.cursor() as cursor:
+        cursor.execute("""
+        SELECT b.blockid, b.nid
+        FROM users u, block b
+        WHERE u.blockid = b.blockid and u.userid = %s
+        """, [uid])
+        res = cursor.fetchone()
+        if res:
+            bid, nid = res
+        else:
+            bid = None
+            nid = None
+
+    if request.method == 'GET':
+
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT r.touserid, u.username
+            FROM relationship r, users u
+            WHERE r.touserid = u.userid and fromuserid = %s and relation_type = %s and status = %s
+            """, [uid, 'Neighbor', 'Approved'])
+            neighbors = cursor.fetchall()
+
+            cursor.execute("""
+            (SELECT r.touserid, u.username
+            FROM relationship r, users u
+            WHERE r.touserid=u.userid and fromuserid = %s and relation_type = %s and status = %s)
+            UNION
+            (SELECT r.fromuserid, u.username
+            FROM relationship r, users u
+            WHERE r.fromuserid=u.userid and touserid = %s and relation_type = %s and status = %s)
+            """, [uid, 'Friend', 'Approved', uid, 'Friend', 'Approved'])
+            friends = cursor.fetchall()
+
+            cursor.execute("""
+            (SELECT r.touserid, u.username
+            FROM relationship r, users u
+            WHERE r.touserid = u.userid and fromuserid = %s and relation_type = %s and status = %s)
+            UNION
+            (SELECT r.touserid, u.username
+            FROM relationship r, users u
+            WHERE r.touserid=u.userid and fromuserid = %s and relation_type = %s and status = %s)
+            UNION
+            (SELECT r.fromuserid, u.username
+            FROM relationship r, users u
+            WHERE r.fromuserid=u.userid and touserid = %s and relation_type = %s and status = %s)
+            """, [uid, 'Neighbor', 'Approved', uid, 'Friend', 'Approved', uid, 'Friend', 'Approved'])
+            friends_or_neighbors = cursor.fetchall()
+
+            just_neighbors = []
+            just_friends = []
+            friends_and_neighbors = []
+            for e in friends_or_neighbors:
+                if e in neighbors and e not in friends:
+                    just_neighbors.append(e)
+                elif e not in neighbors and e in friends:
+                    just_friends.append(e)
+                else:
+                    friends_and_neighbors.append(e)
+
+
+        content = {
+            "bid": bid,
+            "nid": nid,
+            'just_neighbors': just_neighbors,
+            'just_friends': just_friends,
+            'friends_and_neighbors': friends_and_neighbors,
+            'error_message': request.session.get('error_message')
+
+        }
+        return render(request, 'send_message.html', content)
+
+    elif request.method == 'POST':
+        send_to_user = request.POST.get('userid')
+        send_to_block = request.POST.get('send_to_block')
+        send_to_neighborhood = request.POST.get('send_to_neighborhood')
+        subject = request.POST.get('subject')
+        body = request.POST.get('body')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+
+        if latitude == '':
+            latitude = None
+        if longitude == '':
+            longitude = None
+        if send_to_user == '':
+            send_to_user = None
+
+        if send_to_user is None and send_to_block is None and send_to_neighborhood is None:
+            request.session['error_message'] = 'Please provide at least one receiver from the user, block or neighborhood'
+            return redirect('send_message')
+
+        request.session['error_message'] = None
+        with connection.cursor() as cursor:
+            cursor.execute("""
+            INSERT INTO message (userid, subject, body, latitude, longitude)
+            VALUES (%s, %s, %s, %s, %s)
+            RETURNING mid
+            """, [uid, subject, body, latitude, longitude])
+            new_mid = cursor.fetchone()[0]
+
+
+        if send_to_user:
+            send_to_user = int(send_to_user)
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                INSERT INTO send_to_user (userid, mid)
+                VALUES (%s, %s)
+                """, [send_to_user, new_mid])
+
+        if send_to_block:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                INSERT INTO send_to_block (mid, blockid)
+                VALUES (%s, %s)
+                """, [new_mid, bid])
+
+        if send_to_neighborhood:
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                INSERT INTO send_to_neighbor (mid, nid)
+                VALUES (%s, %s)
+                """, [new_mid, nid])
+
+        return redirect('send_message')
+
+
+

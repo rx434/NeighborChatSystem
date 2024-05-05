@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>View_Message</title>
 </head>
+<style>
+    #map {
+        height: 400px;
+        width: 100%;
+    }
+</style>
 <script>
         function AllMessagesFromNeighborsAll() {
             document.getElementById('AllMessagesFromNeighborsAll').style.display = 'block';
@@ -25,6 +31,10 @@
             document.getElementById('AllMessagesFromBlockAll').style.display = 'block';
             document.getElementById('AllMessagesFromBlockNew').style.display = 'none';
         }
+        function AllMessagesFromBlockNew() {
+            document.getElementById('AllMessagesFromBlockAll').style.display = 'none';
+            document.getElementById('AllMessagesFromBlockNew').style.display = 'block';
+        }
         function AllMessagesFromNeighborhoodsAll() {
             document.getElementById('AllMessagesFromNeighborhoodsAll').style.display = 'block';
             document.getElementById('AllMessagesFromNeighborhoodsNew').style.display = 'none';
@@ -32,10 +42,6 @@
         function AllMessagesFromNeighborhoodsNew() {
             document.getElementById('AllMessagesFromNeighborhoodsAll').style.display = 'none';
             document.getElementById('AllMessagesFromNeighborhoodsNew').style.display = 'block';
-        }
-        function AllMessagesFromBlockNew() {
-            document.getElementById('AllMessagesFromBlockAll').style.display = 'none';
-            document.getElementById('AllMessagesFromBlockNew').style.display = 'block';
         }
         function AllMessagesFromNeighbors() {
             document.getElementById('AllMessagesFromNeighbors').style.display = 'block';
