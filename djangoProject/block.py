@@ -23,6 +23,14 @@ def block(request, bid):
             """, [bid])
             members = cursor.fetchall()
 
+            cursor.execute("""
+            SELECT users.photo, users.userid, users.username
+            FROM block, users
+            WHERE block.blockid = users.blockid and block.blockid = %s and membership_date > 
+            CURRENT_TIMESTAMP - INTERVAL '24 hours';
+            """, [bid])
+            newly_members = cursor.fetchall()
+
         uid = request.session.get('uid', None)
 
         with connection.cursor() as cursor:
@@ -43,6 +51,7 @@ def block(request, bid):
             'longitude': longitude,
             'radius': radius,
             'members': members,
+            'newly_members': newly_members,
             'follow': follow,
             'MEDIA_ROOT': MEDIA_ROOT
         }

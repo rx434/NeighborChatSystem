@@ -24,6 +24,19 @@
     {% else %}
         <p>No members found in this block.</p>
     {% endif %}
+    <h2>Newly joined members in this block in the last 24 hours:</h2>
+    {% if newly_members %}
+        <ul>
+            {% for photo, uid, username in newly_members %}
+            <li>
+                <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                <a href="/profile/{{ uid }}/">{{ username }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No newly members in this block.</p>
+    {% endif %}
     {% if follow %}
         <form action="/follow/" method="post">
             {% csrf_token %}
@@ -39,9 +52,9 @@
             <button type="submit">Follow</button>
         </form>
     {% endif %}
+</div>
     <form action="/" method="get">
         <button type="submit">Back to home</button>
     </form>
-</div>
 </body>
 </html>
