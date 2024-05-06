@@ -376,4 +376,71 @@ def send_message(request):
         return redirect('send_message')
 
 
+@login_required
+def search_message(request):
+    uid = request.session.get('uid')
+    if request.method == 'GET':
 
+        content = {
+
+        }
+        return render(request, 'search_message.html', content)
+
+    elif request.method == 'POST':
+        search_type = request.POST.get('search_type')
+        if search_type == "keyword":
+            keyword = request.POST.get('keyword')
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                (SELECT *
+                FROM send_to_user_messages
+                WHERE receiver_id = %s and (body ILIKE %s or subject ILIKE %s))
+                UNION
+                (SELECT *
+                FROM send_to_block_messages
+                WHERE receiver_id = %s and (body ILIKE %s or subject ILIKE %s))
+                UNION
+                (SELECT *
+                FROM send_to_neighbor_messages
+                WHERE receiver_id = %s and (body ILIKE %s or subject ILIKE %s))
+                """, [uid, '%'+ keyword + '%', '%'+ keyword + '%',
+                      uid, '%'+ keyword + '%', '%'+ keyword + '%',
+                      uid, '%'+ keyword + '%', '%'+ keyword + '%'])
+                searched_messages = cursor.fetchall()
+
+        elif search_type == 'location':
+            latitude = request.POST.get('latitude')
+            longitude = request.POST.get('longitude')
+            miles = request.POST.get('miles')
+            if miles == "":
+                miles = 0
+            else:
+                miles = float(miles)
+            if latitude == "" or longitude == "":
+                searched_messages = None
+            else:
+                with connection.cursor() as cursor:
+                    cursor.execute("""
+                    (SELECT *
+                    FROM send_to_user_messages
+                    WHERE receiver_id = %s and earth_distance(ll_to_earth(%s, %s), ll_to_earth(latitude, longitude)) 
+                    <= %s * 1609)
+                    UNION
+                    (SELECT *
+                    FROM send_to_block_messages
+                    WHERE receiver_id = %s and earth_distance(ll_to_earth(%s, %s), ll_to_earth(latitude, longitude)) 
+                    <= %s * 1609)
+                    UNION
+                    (SELECT *
+                    FROM send_to_neighbor_messages
+                    WHERE receiver_id = %s and earth_distance(ll_to_earth(%s, %s), ll_to_earth(latitude, longitude)) 
+                    <= %s * 1609)
+                    """, [uid, latitude, longitude, miles,
+                          uid, latitude, longitude, miles,
+                          uid, latitude, longitude, miles])
+                    searched_messages = cursor.fetchall()
+
+        content = {
+            'searched_messages': searched_messages,
+        }
+        return render(request, 'search_message.html', content)

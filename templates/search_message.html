@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search Message</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <form action="/search_message/" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="search_type" value="keyword">
+        <input type="text" name="keyword"><br>
+        <button type="submit">Search by keywords</button>
+    </form>
+</div>
+<div>
+    <form action="/search_message/" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="search_type" value="location">
+        <label>Latitude:</label><input type="text" id="latitude" name="latitude"><br>
+        <label>Longitude:</label><input type="text" id="longitude" name="longitude"><br>
+        <lanel>Miles:</lanel><input type="text" name="miles" pattern="[0-9]+([.][0-9]+)?" title="Please enter a valid number (integer or float)">
+        <div id="map"></div>
+        <script>
+            var map = L.map('map');
+
+            var currentPositionMarker = null;
+
+            // Set up the tile layer
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            function onMapClick(e) {
+                // Clear existing marker
+                if (window.marker) map.removeLayer(window.marker);
+
+                if (currentPositionMarker) {
+                    map.removeLayer(currentPositionMarker);
+                    currentPositionMarker = null;  // Reset the marker variable
+                }
+
+                // Add a marker to show where you clicked
+                window.marker = L.marker(e.latlng).addTo(map);
+
+                // Update the latitude and longitude
+                document.getElementById('latitude').value = e.latlng.lat.toFixed(6);
+                document.getElementById('longitude').value = e.latlng.lng.toFixed(6);
+            }
+
+            map.on('click', onMapClick);
+
+            // Check if geolocation is supported and ask for the user's location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var currentPos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+
+                    // Set the view to the current position with an appropriate zoom level
+                    map.setView(currentPos, 13);
+
+                    // Optionally, add a marker on the user's current position
+                    currentPositionMarker = L.marker(currentPos).addTo(map).bindPopup('You are here').openPopup();
+                    document.getElementById('latitude').value = currentPos.lat.toFixed(6);
+                    document.getElementById('longitude').value = currentPos.lng.toFixed(6);
+                }, function() {
+                    // If there is an error, or the user denies the location request
+                    alert('Unable to retrieve your location');
+                    // Set a default position
+                    map.setView([51.505, -0.09], 13);
+                });
+            } else {
+                // If Geolocation is not supported by this browser
+                alert('Geolocation is not supported by your browser');
+                // Set a default position
+                map.setView([51.505, -0.09], 13);
+            }
+        </script>
+        <button type="submit">Search by location</button>
+    </form>
+</div>
+<div>
+    {% if searched_messages %}
+        <ul>
+            {% for receiver_id, mid, ownerid, subject, body, timestamp, latitude, longitude, username, photo in searched_messages %}
+                <li>
+                    <img src="/media/{{ photo }}" style="width: 100px; height: 100px;">
+                    <a href="/profile/{{ ownerid }}/">{{ username }}</a>
+                    <h1>{{ subject }}</h1>
+                    <h4>{{ body }}</h4>
+                    <p>Posted on: {{ timestamp }}</p>
+                    <p>Latitude: {{ latitude }}</p>
+                    <p>Longitude: {{ longitude }}</p>
+                    <a href="/message/{{ mid }}/">View</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h1>Cannot find any related messages.</h1>
+    {% endif %}
+</div>
+<form action="/" method="get">
+    <button type="submit">Back to home</button>
+</form>
+</body>
+</html>
